@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Asientos - Cine</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f9; padding: 40px 16px; }
+        .pantalla { background: #333; color: white; padding: 10px; width: 60%; margin: 0 auto 30px; border-radius: 5px; }
+        .grid-asientos { display: grid; grid-template-columns: repeat(8, 64px); justify-content: center; gap: 10px; }
+        .asiento { padding: 14px 6px; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; }
+        .disponible { background: #28a745; }
+        .ocupado { background: #dc3545; cursor: not-allowed; }
+        .recomendador { display: inline-block; margin-top: 28px; padding: 12px 18px; border-radius: 7px; background: #6f42c1; color: white; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>Selección de Asientos</h1>
+    <div class="pantalla">PANTALLA DE CINE</div>
+    <div id="mapa" class="grid-asientos">Cargando mapa...</div>
+    <a class="recomendador" href="/recomendacion.html">Recomendar mejores asientos</a>
+
+    <script>
+        fetch('/api/asientos/mapa')
+            .then(response => response.json())
+            .then(data => {
+                const contenedor = document.getElementById('mapa');
+                contenedor.innerHTML = '';
+
+                data.forEach(asiento => {
+                    const elemento = document.createElement('div');
+                    elemento.className = `asiento ${asiento.disponible ? 'disponible' : 'ocupado'}`;
+                    elemento.innerText = `${asiento.fila}-${asiento.numero}`;
+
+                    if (asiento.disponible) {
+                        elemento.onclick = () => {
+                            alert(`Seleccionaste el asiento: ${asiento.fila}-${asiento.numero}`);
+                        };
+                    }
+
+                    contenedor.appendChild(elemento);
+                });
+            })
+            .catch(() => {
+                document.getElementById('mapa').innerText = 'No se pudo cargar el mapa.';
+            });
+    </script>
+</body>
+</html>
